@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TopUpWorkflow\TopUpWorkflow.csproj" />
+    <ProjectReference Include="..\TopUpWorker\TopUpWorkflow.csproj" />
   </ItemGroup>
 
 </Project>
