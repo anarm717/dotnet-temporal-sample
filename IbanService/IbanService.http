@@ -1,0 +1,6 @@
+@IbanService_HostAddress = http://localhost:5124
+
+GET {{IbanService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
