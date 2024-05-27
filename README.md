@@ -81,9 +81,9 @@ The workflow orchestrates the following steps:
    ```bash
    temporal server start-dev
    ```
-2**Clone repository** and navigate to the project directory.
+2. **Clone repository** and navigate to the project directory.
 
-3**Run the following** commands to start each service:
+3. **Run the following** commands to start each service:
 
    ```bash
    cd CardService
@@ -111,7 +111,7 @@ The workflow orchestrates the following steps:
    dotnet run
    ```
 
-Testing
+5. **Testing**
 
 You can test the workflow by running the client, which initiates the top-up process. The console will display the workflow progress and completion status.
 
