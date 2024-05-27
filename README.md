@@ -82,6 +82,7 @@ The workflow orchestrates the following steps:
    temporal server start-dev
    ```
 2**Clone repository** and navigate to the project directory.
+
 3**Run the following** commands to start each service:
 
    ```bash
@@ -118,5 +119,6 @@ You can test the workflow by running the client, which initiates the top-up proc
    cd TopUpClient
    dotnet run
    ```
+
 You should see output indicating the workflow steps and the successful completion of the top-up process.
 
