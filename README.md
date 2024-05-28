@@ -15,7 +15,7 @@ This project demonstrates a sample backend architecture with four microservices 
 - [Setup](#setup)
     - [Prerequisites](#prerequisites)
     - [Running the Services](#running-the-services)
-    - [Running the Workflow](#running-the-workflow)
+    - [Running the Worker](#running-the-worker)
 - [Testing](#testing)
 
 ## Overview
@@ -70,7 +70,6 @@ The workflow orchestrates the following steps:
 ### Prerequisites
 
 - .NET 8.0 SDK
-- Docker
 - Temporal CLI
 - Temporal Server
 
@@ -104,14 +103,14 @@ The workflow orchestrates the following steps:
    cd IbanService
    dotnet run
    ```
-4. **Start the Temporal Worker**:
+### Running the Worker
 
    ```bash
    cd TopUpWorker
    dotnet run
    ```
 
-5. **Testing**
+### Testing
 
 You can test the workflow by running the client, which initiates the top-up process. The console will display the workflow progress and completion status.
 
