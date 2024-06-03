@@ -1,6 +1,6 @@
 ﻿// TopUpClient/Program.cs
 using Temporalio.Client;
-using TopUpWorkflow.Workflows;
+
 public static class Program
 {
     public static async Task Main(string[] args)
@@ -13,13 +13,13 @@ public static class Program
         {
             // Start the workflow
             var handle = await client.StartWorkflowAsync(
-                (TopUpWorkflow.Workflows.TopUpWorkflow wf) => wf.RunAsync("card123", "iban456", 40),
+                (CardService.Workflows.TopUpWorkflow wf) => wf.TopUpAsync("card123", 40),
                 new(id: workflowId, taskQueue: "top-up-task-queue"));
 
             Console.WriteLine($"Started Workflow {workflowId}");
 
             // Await the result of the workflow
-            await handle.GetResultAsync();
+            // await handle.GetResultAsync();
             Console.WriteLine($"Workflow ended successfully.");
         }
         catch (Exception ex)
