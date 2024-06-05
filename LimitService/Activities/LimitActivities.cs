@@ -2,18 +2,16 @@
 using System.Net.Http.Json;
 using Temporalio.Activities;
 
-namespace TopUpWorkflow.Activities
+namespace LimitService.Activities
 {
     public class LimitActivities
     {
         [Activity]
         public static async Task CheckLimitAsync(string cardNumber, decimal amount)
         {
-            var httpClient = new HttpClient();
-            var response = await httpClient.GetAsync($"http://localhost:5229/api/{cardNumber}");
-            response.EnsureSuccessStatusCode();
-            var limit = await response.Content.ReadFromJsonAsync<decimal>();
-
+            var limit = 50;
+            //sleep for 5 seconds to simulate a long running activity
+            await Task.Delay(5000);
             if (limit < amount)
             {
                 throw new Exception("Limit exceeded");

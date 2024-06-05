@@ -1,43 +1,32 @@
-var builder = WebApplication.CreateBuilder(args);
+using Temporalio.Client;
+using Temporalio.Worker;
+using CardService.Activities;
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
-var app = builder.Build();
+// Create a client to connect to localhost on "default" namespace
+var client = await TemporalClient.ConnectAsync(new("localhost:7233"));
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Cancellation token to shutdown worker on ctrl+c
+using var tokenSource = new CancellationTokenSource();
+Console.CancelKeyPress += (_, eventArgs) =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    tokenSource.Cancel();
+    eventArgs.Cancel = true;
 };
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
-app.MapControllers();
-app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+// Create a worker with the activity and workflow registered
+using var worker = new TemporalWorker(
+    client, // client
+    new TemporalWorkerOptions(taskQueue: "top-up-task-queue")
+        .AddAllActivities(new CardActivities())
+        .AddWorkflow<CardService.Workflows.TopUpWorkflow>() // Register workflow
+);
+
+try
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    Console.WriteLine("Card service worker started");
+    await worker.ExecuteAsync(tokenSource.Token);
+}
+catch (OperationCanceledException)
+{
+    Console.WriteLine("Worker cancelled");
 }

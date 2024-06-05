@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopUpWorkflow", "TopUpWorkflow.csproj", "{AC07969F-BA80-4A9D-82DD-9FDD8070EC27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardService", "CardService.csproj", "{05F9A24D-A857-47E2-B98A-DBE9F73B96E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AC07969F-BA80-4A9D-82DD-9FDD8070EC27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC07969F-BA80-4A9D-82DD-9FDD8070EC27}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AC07969F-BA80-4A9D-82DD-9FDD8070EC27}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AC07969F-BA80-4A9D-82DD-9FDD8070EC27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05F9A24D-A857-47E2-B98A-DBE9F73B96E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05F9A24D-A857-47E2-B98A-DBE9F73B96E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05F9A24D-A857-47E2-B98A-DBE9F73B96E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05F9A24D-A857-47E2-B98A-DBE9F73B96E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {25733D13-15D3-4DC2-A6E1-08A95694D274}
+		SolutionGuid = {72E5289C-432A-4D07-B2B6-98710839D7DA}
 	EndGlobalSection
 EndGlobal
