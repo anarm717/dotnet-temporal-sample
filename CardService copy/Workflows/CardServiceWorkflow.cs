@@ -21,15 +21,17 @@ public class TopUpWorkflow
             NonRetryableErrorTypes = new[] { "ComissionServiceErrorException", "LimitServiceErrorException", "CardServiceErrorException", "IbanServiceErrorException" }
         };
         //log with params
-        Console.WriteLine("CardServiceFirstCheck executed");
+        Console.WriteLine($"TopUpAsync started with cardNumber: {cardNumber}, iban: {iban}, amount: {amount}, workflowId: {workflowId}");
+        await Workflow.ExecuteActivityAsync(
+            () => CardActivities.CardServiceFirstCheck(cardNumber,amount),
+            new ActivityOptions { StartToCloseTimeout = TimeSpan.FromMinutes(5), TaskQueue= "comission-task-queue2" , RetryPolicy = retryPolicy }
+        );
         IReadOnlyCollection<object?> args = new object[] { cardNumber, iban, amount, workflowId };
-        await Workflow.ExecuteActivityAsync("GetCommission",args,
+        await Workflow.ExecuteActivityAsync("CheckComission",args,
             new ActivityOptions { StartToCloseTimeout = TimeSpan.FromMinutes(5), TaskQueue= "comission-task-queue" , RetryPolicy = retryPolicy }
         );
-        IReadOnlyCollection<object?> args1 = new object[] { cardNumber, amount };
-        await Workflow.ExecuteActivityAsync("CheckLimit",args1,
-            new ActivityOptions { StartToCloseTimeout = TimeSpan.FromMinutes(5), TaskQueue= "limit-task-queue" , RetryPolicy = retryPolicy }
-        );
+
+        // Console.WriteLine("CardServiceFirstCheck executed");
         // var comissionWorkFlowId = $"comission-check-activity-{Guid.NewGuid()}";
         // ChildWorkflowOptions childWorkflowOptions = new ChildWorkflowOptions
         // {

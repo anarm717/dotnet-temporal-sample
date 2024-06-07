@@ -1,8 +1,8 @@
 using Temporalio.Client;
 using Temporalio.Worker;
-using CommissionService.Activities;
-using ComissionService.Workflows;
+using CardService.Activities;
 
+// Create a client to connect to localhost on "default" namespace
 var client = await TemporalClient.ConnectAsync(new("localhost:7233"));
 
 // Cancellation token to shutdown worker on ctrl+c
@@ -16,14 +16,14 @@ Console.CancelKeyPress += (_, eventArgs) =>
 // Create a worker with the activity and workflow registered
 using var worker = new TemporalWorker(
     client, // client
-    new TemporalWorkerOptions(taskQueue: "comission-task-queue")
-    .AddAllActivities(new CommissionActivities())
-    .AddWorkflow<TopUpWorkflow>()// Register workflow
+    new TemporalWorkerOptions(taskQueue: "comission-task-queue2")
+        .AddAllActivities(new CardActivities())
+        .AddWorkflow<CardService.Workflows.TopUpWorkflow>() // Register workflow
 );
 
 try
 {
-    Console.WriteLine("Comission service worker started");
+    Console.WriteLine("Card service worker started");
     await worker.ExecuteAsync(tokenSource.Token);
 }
 catch (OperationCanceledException)

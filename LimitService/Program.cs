@@ -18,7 +18,6 @@ using var worker = new TemporalWorker(
     client, // client
     new TemporalWorkerOptions(taskQueue: "limit-task-queue")
     .AddAllActivities(new LimitActivities())// Register workflow
-    .AddWorkflow<LimitWorkflow>()// Register workflow
 );
 
 try

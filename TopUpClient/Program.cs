@@ -13,8 +13,6 @@ public static class Program
                                             IdReusePolicy = WorkflowIdReusePolicy.TerminateIfRunning
                                         };
         await client.StartWorkflowAsync("TopUpWorkflow", args1, options);
-        Console.WriteLine($"Started Workflow {workflowId}");
-
-        
+        Console.WriteLine($"Started Workflow {workflowId}");  
     }
 }

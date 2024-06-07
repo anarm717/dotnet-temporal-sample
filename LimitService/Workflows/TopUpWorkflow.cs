@@ -4,7 +4,7 @@ using Temporalio.Common;
 using LimitService.Activities;
 
 [Workflow]
-public class LimitWorkflow
+public class TopUpWorkflow
 {
     [WorkflowRun]
     public async Task CheckComissionAsync(string cardNumber,string iban, decimal amount, string workflowId)
