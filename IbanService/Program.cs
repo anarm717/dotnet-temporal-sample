@@ -14,7 +14,7 @@ Console.CancelKeyPress += (_, eventArgs) =>
 // Create a worker with the activity and workflow registered
 using var worker = new TemporalWorker(
     client, // client
-    new TemporalWorkerOptions(taskQueue: "top-up-task-queue")
+    new TemporalWorkerOptions(taskQueue: "iban-task-queue")
     .AddAllActivities(new IbanActivities())// Register workflow
 );
 

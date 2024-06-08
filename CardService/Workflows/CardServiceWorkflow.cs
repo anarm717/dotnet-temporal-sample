@@ -2,8 +2,7 @@ namespace CardService.Workflows;
 using Temporalio.Workflows;
 using Temporalio.Common;
 using CardService.Activities;
-using Temporalio.Worker;
-using Temporalio.Client;
+using Temporalio.Exceptions;
 
 [Workflow]
 public class TopUpWorkflow
@@ -20,35 +19,76 @@ public class TopUpWorkflow
             MaximumAttempts = 2,
             NonRetryableErrorTypes = new[] { "ComissionServiceErrorException", "LimitServiceErrorException", "CardServiceErrorException", "IbanServiceErrorException" }
         };
-        //log with params
-        Console.WriteLine("CardServiceFirstCheck executed");
-        IReadOnlyCollection<object?> args = new object[] { cardNumber, iban, amount, workflowId };
-        await Workflow.ExecuteActivityAsync("GetCommission",args,
-            new ActivityOptions { StartToCloseTimeout = TimeSpan.FromMinutes(5), TaskQueue= "comission-task-queue" , RetryPolicy = retryPolicy }
-        );
-        IReadOnlyCollection<object?> args1 = new object[] { cardNumber, amount };
-        await Workflow.ExecuteActivityAsync("CheckLimit",args1,
-            new ActivityOptions { StartToCloseTimeout = TimeSpan.FromMinutes(5), TaskQueue= "limit-task-queue" , RetryPolicy = retryPolicy }
-        );
-        // var comissionWorkFlowId = $"comission-check-activity-{Guid.NewGuid()}";
-        // ChildWorkflowOptions childWorkflowOptions = new ChildWorkflowOptions
-        // {
-        //     Id = comissionWorkFlowId,
-        //     ParentClosePolicy = ParentClosePolicy.Abandon,
-        //     TaskQueue = "comission-task-queue",
-        // };
-        // await Workflow.StartChildWorkflowAsync("ComissionWorkflow", new object[] { cardNumber, iban, amount, workflowId }, childWorkflowOptions);
 
+        decimal commissionRate;
+        try
+        {   
+            Console.WriteLine("Calling comission service");
+            IReadOnlyCollection<object?> args = new object[] { cardNumber, iban, amount, workflowId };
+            commissionRate = await Workflow.ExecuteActivityAsync<decimal>("GetCommission",args,
+                new ActivityOptions { StartToCloseTimeout = TimeSpan.FromMinutes(5), TaskQueue= "comission-task-queue" , RetryPolicy = retryPolicy }
+            );
+        }
+        catch (ApplicationFailureException ex)
+        {
+            throw new ApplicationFailureException("Comission service not working", ex);
+        }
+        var totalAmount = amount * (1 + commissionRate);
+        try
+        {  
+            Console.WriteLine("Calling limit service");
+            IReadOnlyCollection<object?> args1 = new object[] { cardNumber, amount };
+            await Workflow.ExecuteActivityAsync("CheckLimit",args1,
+                new ActivityOptions { StartToCloseTimeout = TimeSpan.FromMinutes(5), TaskQueue= "limit-task-queue" , RetryPolicy = retryPolicy }
+            );
+        }
+        catch (ApplicationFailureException ex) when (ex.ErrorType == "LimitServiceErrorException")
+        {
+            throw new ApplicationFailureException("Limit service not working", ex);
+        }
 
-        // Create a worker with the activity and workflow registered
-        // var client = await TemporalClient.ConnectAsync(new("localhost:7233"));
-        // using var worker1 = new TemporalWorker(
-        //     client, // client
-        //     new TemporalWorkerOptions(taskQueue: "top-up-task-queue")
-        //         .AddAllActivities(typeof(TestActivities))
-        //         .AddWorkflow<CardService.Workflows.TopUpWorkflow>() // Register workflow
-        // );
-        // worker1.ExecuteAsync(tokenSource.Token);
+        try
+        {   
+            Console.WriteLine("Calling card service withdraw activity");
+            await Workflow.ExecuteActivityAsync(
+                () => CardActivities.WithdrawAsync(cardNumber,totalAmount),
+                new ActivityOptions { StartToCloseTimeout = TimeSpan.FromSeconds(10), RetryPolicy = retryPolicy }
+            );
+        }
+        catch (ApplicationFailureException ex) when (ex.ErrorType == "CardServiceErrorException")
+        {
+            throw new ApplicationFailureException("Card service not working", ex);
+        }
+
+        try
+        {   
+            Console.WriteLine("Calling Iban service");
+            IReadOnlyCollection<object?> args1 = new object[] { cardNumber, amount };
+            await Workflow.ExecuteActivityAsync("TopUp",args1,
+                new ActivityOptions { StartToCloseTimeout = TimeSpan.FromMinutes(5), TaskQueue= "iban-task-queue" , RetryPolicy = retryPolicy }
+            );
+        }
+        catch (ApplicationFailureException ex) when (ex.ErrorType == "IbanServiceErrorException")
+        {
+            throw new ApplicationFailureException("Iban service not working", ex);
+        }
+
+        try
+        {   
+            bool comission_collected = false;
+            Console.WriteLine("Calling comission service collect comission activity");
+            IReadOnlyCollection<object?> args = new object[] { cardNumber, amount };
+            comission_collected = await Workflow.ExecuteActivityAsync<bool>("CollectCommission",args,
+                new ActivityOptions { StartToCloseTimeout = TimeSpan.FromMinutes(5), TaskQueue= "comission-task-queue" , RetryPolicy = retryPolicy }
+            );
+            if (comission_collected) {
+                Console.WriteLine("Comission collected");
+            }
+        }
+        catch (ApplicationFailureException ex) when (ex.ErrorType == "ComissionServiceErrorException")
+        {
+            throw new ApplicationFailureException("Comission service not working", ex);
+        }
 
         Console.WriteLine($"Started commission child Workflow");
     }

@@ -1,7 +1,6 @@
 using Temporalio.Client;
 using Temporalio.Worker;
 using LimitService.Activities;
-using ComissionService.Workflows;
 
 var client = await TemporalClient.ConnectAsync(new("localhost:7233"));
 

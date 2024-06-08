@@ -1,7 +1,6 @@
 using Temporalio.Client;
 using Temporalio.Worker;
 using CommissionService.Activities;
-using ComissionService.Workflows;
 
 var client = await TemporalClient.ConnectAsync(new("localhost:7233"));
 
@@ -18,7 +17,6 @@ using var worker = new TemporalWorker(
     client, // client
     new TemporalWorkerOptions(taskQueue: "comission-task-queue")
     .AddAllActivities(new CommissionActivities())
-    .AddWorkflow<TopUpWorkflow>()// Register workflow
 );
 
 try

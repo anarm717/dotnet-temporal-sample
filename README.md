@@ -36,7 +36,7 @@ The project consists of the following components:
     - Commission Service
     - Limit Service
     - Iban Service
-- **Workflow**: Defines the top-up process using Temporal.
+- **Workflow**: In CardService created workflow defines the top-up process using Temporal. Each service has it's activity and different task queue to get tasks ordered in workflow.
 
 ## Microservices
 
