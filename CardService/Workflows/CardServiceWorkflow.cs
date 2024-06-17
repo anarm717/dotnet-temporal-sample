@@ -7,6 +7,17 @@ using Temporalio.Exceptions;
 [Workflow]
 public class TopUpWorkflow
 {
+
+    private TaskCompletionSource<bool> _activityCompletion = new TaskCompletionSource<bool>();
+
+    [WorkflowSignal]
+    public Task ApproveRequestSignal()
+    {
+        // Signal received, complete the waiting task
+        _activityCompletion.TrySetResult(true);
+        return Task.CompletedTask;
+    }
+
     [WorkflowRun]
     public async Task TopUpAsync(string cardNumber,string iban, decimal amount, string workflowId)
     {
@@ -46,6 +57,9 @@ public class TopUpWorkflow
         {
             throw new ApplicationFailureException("Limit service not working", ex);
         }
+
+        // Wait for the signal to complete the activity
+        await _activityCompletion.Task;
 
         try
         {   
