@@ -9,7 +9,6 @@ This project demonstrates a sample backend architecture with four microservices 
 - [Microservices](#microservices)
     - [Card Service](#card-service)
     - [Commission Service](#commission-service)
-    - [Approval Signal](#approval-signal)
     - [Limit Service](#limit-service)
     - [Iban Service](#iban-service)
 - [Workflow](#workflow)
@@ -50,9 +49,9 @@ Handles card-related operations such as balance checking and withdrawal.
 
 Calculates and collects commission for transactions.
 
-### Approval Signal 
+### Approve Request 
 
-The Approval Signal is a human-driven process step within the workflow. At this point, the workflow pauses and waits for a human operator to approve the transaction before continuing. This step ensures that the process can incorporate manual oversight and verification as needed. Once the approval is received via a signal, the workflow resumes and completes the subsequent steps.
+The Approval Request is a human-driven process step within the workflow. At this point, the workflow pauses and waits for a human operator to approve the transaction before continuing. This step ensures that the process can incorporate manual oversight and verification as needed. Once the approval is received via a signal, the workflow resumes and completes the subsequent steps.
 
 ### Limit Service
 
